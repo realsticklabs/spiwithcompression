@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmallProg Interpreter</title>
+</head>
+<body>
+    <h1>SmallProg Interpreter</h1>
+    <textarea id="input" placeholder="Enter SmallProg program" style="height: 150px;"></textarea><br>
+    <button onclick="interpret()">Interpret</button>
+    <p>Hint (Only works on specific browsers): Spacebar is number 32</p>
+    <div id="output"></div>
+    <br>
+    <button onclick="downloadFile()">Download as .spi</button>
+    <button onclick="compressToBase64()">Compress to .smallprog</button>
+    <input type="file" id="fileInput" accept=".txt" onchange="loadFile(event)">
+  
+    <script>
+        function interpret() {
+            var input = document.getElementById("input").value.trim().split("\n"); // Split input by lines
+            var output = [];
+
+            // Process each line of input
+            input.forEach(function(line) {
+                var values = line.trim().split(" ").map(e => parseInt(e)); // Split line by spaces and convert to numbers
+                var lineOutput = values.map(e => isNaN(e) ? '&' : String.fromCharCode(e + 96)).join(""); // Interpret each value in the line
+                output.push(lineOutput); // Store the interpreted line
+            });
+
+            // Display all interpreted lines
+            document.getElementById("output").innerText = output.join("\n");
+        }
+
+        function downloadFile() {
+            var content = document.getElementById("input").value;
+            var blob = new Blob([content], { type: 'application/octet-stream' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'smallprog.spi'; // Specify the filename with .spi extension
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function compressToBase64() {
+            var content = document.getElementById("input").value;
+            var compressedContent = btoa(content); // Compress content to Base64
+            var blob = new Blob([compressedContent], { type: 'application/octet-stream' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'smallprog.smallprog'; // Specify the filename with .smallprog extension
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function loadFile(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var contents = e.target.result;
+                document.getElementById('input').value = contents;
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
