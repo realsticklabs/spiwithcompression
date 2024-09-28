@@ -14,7 +14,7 @@
     <br>
     <button onclick="downloadFile()">Download as .spi</button>
     <button onclick="compressToBase64()">Compress to .smallprog</button>
-    <input type="file" id="fileInput" accept=".txt" onchange="loadFile(event)">
+    <input type="file" id="fileInput" accept=".txt,.smallprog" onchange="loadFile(event)">
   
     <script>
         function interpret() {
@@ -63,7 +63,10 @@
             var reader = new FileReader();
             reader.onload = function(e) {
                 var contents = e.target.result;
-                document.getElementById('input').value = contents;
+                if (file.name.endsWith('.smallprog')) {
+                    contents = atob(contents); // Decode Base64 if it's a .smallprog file
+                }
+                document.getElementById('input').value = contents; // Set the contents to the textarea
             };
             reader.readAsText(file);
         }
